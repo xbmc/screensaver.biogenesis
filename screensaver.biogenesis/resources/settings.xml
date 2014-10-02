@@ -1,0 +1,10 @@
+<settings>
+  <setting id="minsize"      label="30000" type="slider" option="int"   range="1,1,500" default="50"/>
+  <setting id="maxsize"      label="30001" type="slider" option="int"   range="1,1,500" default="250"/>
+  <setting id="resettime"    label="30002" type="slider" option="int"   range="100,100,10000" default="2000"/>
+  <setting id="presetchance" label="30003" type="slider" option="float" range="0.01,0.01,1.0" default="0.3"/>
+  <setting id="lineminsize"  label="30004" type="slider" option="int"   range="1,1,10" default="3"/>
+  <setting id="colony"       label="30005" type="bool"   default="true"/>
+  <setting id="lifetime"     label="30006" type="bool"   default="true"/>
+  <setting id="neighbour"    label="30007" type="bool"   default="true"/>
+</settings>
