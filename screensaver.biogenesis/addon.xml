@@ -10,10 +10,11 @@
   <extension
     point="xbmc.ui.screensaver"
     library_linux="screensaver.biogenesis.so"
+    library_windx="screensaver.biogenesis.dll"
     library_osx="screensaver.biogenesis.dylib"/>
   <extension point="xbmc.addon.metadata">
     <summary>BioGenesis screensaver</summary>
     <description>BioGenesis screensaver</description>
-    <platform>linux osx</platform>
+    <platform>linux osx windx</platform>
   </extension>
 </addon>

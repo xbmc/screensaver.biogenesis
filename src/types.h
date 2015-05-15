@@ -72,6 +72,7 @@ public:
 
 	 			CRGBA()								{ col[0] = col[1] = col[2] = 1.0f;	col[3] = 1.0f;	}
 	 			CRGBA(f32 R, f32 G, f32 B, f32 A)	{ col[0]=R; col[1]=G; col[2]=B; col[3]=A;			}
+	 			CRGBA(int R, int G, int B, int A)	{ col[0]=R/255.0f; col[1]=G/255.0f; col[2]=B/255.0f; col[3]=A/255.0f; }
 	u32			RenderColor(void) const;
 	void		Set(f32 R, f32 G, f32 B, f32 A)		{ col[0]=R; col[1]=G; col[2]=B; col[3]=A;			}
 	CRGBA&		operator = (const CRGBA& c)			{ r = c.r; g = c.g; b = c.b; a = c.a; return *this; }
@@ -79,9 +80,9 @@ public:
         static CRGBA           Lerp(const CRGBA& a, const CRGBA& e, float ratio)
         {
           CRGBA result;
-          result.r = a.r*(1.0-ratio)+e.r*ratio;
-          result.g = a.g*(1.0-ratio)+e.g*ratio;
-          result.b = a.b*(1.0-ratio)+e.b*ratio;
+          result.r = a.r*(1.0f-ratio)+e.r*ratio;
+          result.g = a.g*(1.0f-ratio)+e.g*ratio;
+          result.b = a.b*(1.0f-ratio)+e.b*ratio;
           result.a = 1.0;
           return result;
         }

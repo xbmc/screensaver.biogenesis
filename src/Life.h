@@ -12,6 +12,6 @@ void reducePalette();
 
 struct CUSTOMVERTEX
 {
-    float x, y, z, rhw; // The transformed position for the vertex.
+    float x, y, z; // The transformed position for the vertex.
     CRGBA color; // The vertex colour.
 };
