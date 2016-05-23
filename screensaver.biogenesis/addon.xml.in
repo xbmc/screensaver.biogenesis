@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="screensaver.biogenesis"
-  version="1.0.0"
+  version="1.1.0"
   name="BioGensis"
   provider-name="spiff">
   <requires>
@@ -9,12 +9,10 @@
   </requires>
   <extension
     point="xbmc.ui.screensaver"
-    library_linux="screensaver.biogenesis.so"
-    library_windx="screensaver.biogenesis.dll"
-    library_osx="screensaver.biogenesis.dylib"/>
+    library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
     <summary>BioGenesis screensaver</summary>
     <description>BioGenesis screensaver</description>
-    <platform>linux osx windx</platform>
+    <platform>@PLATFORM@</platform>
   </extension>
 </addon>
