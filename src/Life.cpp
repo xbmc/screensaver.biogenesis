@@ -650,7 +650,3 @@ extern "C" void ADDON_FreeSettings()
 extern "C" void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
 {
 }
-
-extern "C" void GetInfo(SCR_INFO *info)
-{
-}
