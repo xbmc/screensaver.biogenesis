@@ -256,7 +256,7 @@ void DrawGrid()
 {
 #ifdef WIN32
   g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-  size_t strides = sizeof(CUSTOMVERTEX), offsets = 0;
+  UINT strides = sizeof(CUSTOMVERTEX), offsets = 0;
   g_pContext->IASetVertexBuffers(0, 1, &g_pVBuffer, &strides, &offsets);
   g_pContext->PSSetShader(g_pPShader, NULL, 0);
 #endif
