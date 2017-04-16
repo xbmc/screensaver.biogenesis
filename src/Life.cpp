@@ -21,12 +21,13 @@
 
 
 #include <xbmc_scr_dll.h>
-#include <GL/gl.h>
 #include "Life.h"
 #include "types.h"
 #include <memory.h>
 #ifdef WIN32
 #include <d3d11.h>
+#else
+#include <GL/gl.h>
 #endif
 
 struct Cell
