@@ -12,6 +12,9 @@ include_directories(${KODI_INCLUDE_DIR})
 
 set(BIOGENESIS_SOURCES src/Life.cpp)
 
+set(BIOGENESIS_HEADERS src/Life.h
+                       src/types.h)
+
 set(DEPLIBS)
 
 build_addon(screensaver.biogenesis BIOGENESIS DEPLIBS)
