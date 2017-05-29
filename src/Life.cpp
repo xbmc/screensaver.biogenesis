@@ -1,6 +1,7 @@
 /*
  * BioGenesis Screensaver for XBox Media Center
  * Copyright (c) 2004 Team XBMC
+ * Copyright (c) 2016-2017 Team Kodi
  *
  * Ver 1.0 2007-02-12 by Asteron  http://asteron.projects.googlepages.com/home
  *
@@ -17,11 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ */
 
+#include <kodi/addon-instance/Screensaver.h>
 
-#include <xbmc_scr_dll.h>
-#include "Life.h"
 #include "types.h"
 #include <memory.h>
 #ifdef WIN32
@@ -30,13 +30,18 @@
 #include <GL/gl.h>
 #endif
 
+struct CUSTOMVERTEX
+{
+  float x, y, z; // The transformed position for the vertex.
+  CRGBA color; // The vertex colour.
+};
+
 struct Cell
 {
   CRGBA color; // The cell color.
   short lifetime;
   char nextstate, state; 
 };
-
 
 #define DEAD 0
 #define ALIVE 1
@@ -72,8 +77,46 @@ struct Grid
   Cell * fullGrid;
 };
 
-Grid grid;
-int PALETTE_SIZE = sizeof(grid.palette)/sizeof(CRGBA);
+class CScreensaverBiogenesis
+  : public kodi::addon::CAddonBase,
+    public kodi::addon::CInstanceScreensaver
+{
+public:
+  CScreensaverBiogenesis();
+
+  virtual bool Start() override;
+  virtual void Stop() override;
+  virtual void Render() override;
+
+private:
+  static const int PALETTE_SIZE;
+  static const int MAX_COLOR;
+
+  Grid m_grid;
+  int m_width;
+  int m_height;
+  float m_ratio;
+
+  CRGBA randColor();
+  void SetDefaults();
+  void SeedGrid();
+  void presetPalette();
+  void CreateGrid();
+  void reducePalette();
+  void DrawGrid();
+  void UpdateStates();
+  void StepLifetime();
+  void StepNeighbors();
+  void StepColony();
+  void Step();
+  CRGBA HSVtoRGB( float h, float s, float v );
+  void DrawRectangle(int x, int y, int w, int h, const CRGBA& dwColour);
+#ifdef WIN32
+  void InitDXStuff(void);
+#endif
+};
+
+const int CScreensaverBiogenesis::PALETTE_SIZE = sizeof(Grid::palette)/sizeof(CRGBA);
 CRGBA COLOR_TIMES[] = {  
   CRGBA(30,30,200,255),
   CRGBA(120,10,255,255),
@@ -84,15 +127,71 @@ CRGBA COLOR_TIMES[] = {
   CRGBA(250,100,30,255),
   CRGBA(255,10,20,255)
   };
-int MAX_COLOR = sizeof(COLOR_TIMES)/sizeof(CRGBA);
+
+const int CScreensaverBiogenesis::MAX_COLOR = sizeof(COLOR_TIMES)/sizeof(CRGBA);
 
 
-float frand(){return ((float) rand() / (float) RAND_MAX);}
+float frand() { return ((float) rand() / (float) RAND_MAX); }
 
-CRGBA randColor()
+////////////////////////////////////////////////////////////////////////////
+// Kodi has loaded us into memory, we should set our core values
+// here and load any settings we may have from our config file
+//
+CScreensaverBiogenesis::CScreensaverBiogenesis()
+{
+  m_grid.cells = nullptr;
+  m_grid.fullGrid = nullptr;
+  m_width = Width();
+  m_height = Height();
+  m_ratio = (float)m_width/(float)m_height;
+  SetDefaults();
+  CreateGrid();
+#ifdef WIN32
+  g_pContext = reinterpret_cast<ID3D11DeviceContext*>(Device());
+  InitDXStuff();
+#endif
+}
+
+// Kodi tells us we should get ready
+// to start rendering. This function
+// is called once when the screensaver
+// is activated by Kodi.
+bool CScreensaverBiogenesis::Start()
+{
+  SeedGrid();
+  return true;
+}
+
+// Kodi tells us to render a frame of
+// our screensaver. This is called on
+// each frame render in Kodi, you should
+// render a single frame only - the DX
+// device will already have been cleared.
+void CScreensaverBiogenesis::Render()
+{
+  if (m_grid.frameCounter++ == m_grid.resetTime)
+    CreateGrid();
+  Step();
+  DrawGrid();
+}
+
+// Kodi tells us to stop the screensaver
+// we should free any memory and release
+// any resources we have created.
+void CScreensaverBiogenesis::Stop()
+{
+  delete m_grid.fullGrid;
+  m_grid.fullGrid = nullptr;
+#ifdef WIN32
+  SAFE_RELEASE(g_pPShader);
+  SAFE_RELEASE(g_pVBuffer);
+#endif
+}
+
+CRGBA CScreensaverBiogenesis::randColor()
 {
   float h=(float)(rand()%360), s = 0.3f + 0.7f*frand(), v=0.67f+0.25f*frand();
-  if (grid.colorType == COLOR_NEIGHBORS || grid.colorType == COLOR_TIME)
+  if (m_grid.colorType == COLOR_NEIGHBORS || m_grid.colorType == COLOR_TIME)
   {
     s = 0.9f + 0.1f*frand();
     //v = 0.5f + 0.3f*frand();
@@ -100,96 +199,118 @@ CRGBA randColor()
   return HSVtoRGB(h,s,v);
 }
 
-void SeedGrid()
+void CScreensaverBiogenesis::SetDefaults()
 {
-  memset(grid.cells,0, grid.width*grid.height*sizeof(Cell));
-  for ( int i = 0; i<grid.width*grid.height; i++ )
+  m_grid.minSize = 50;
+  m_grid.maxSize = 250;
+  m_grid.spacing = 1;
+  m_grid.resetTime = 2000;
+  m_grid.presetChance = 30;
+  m_grid.allowedColoring = 7;
+  m_grid.cellLineLimit = 3;
+}
+
+void CScreensaverBiogenesis::SeedGrid()
+{
+  memset(m_grid.cells,0, m_grid.width*m_grid.height*sizeof(Cell));
+  for ( int i = 0; i<m_grid.width*m_grid.height; i++ )
   {
-    grid.cells[i].lifetime = 0;
+    m_grid.cells[i].lifetime = 0;
     if (rand() % 4 == 0)
     {
-      grid.cells[i].state = ALIVE;
-      grid.cells[i].nextstate = grid.cells[i].state;
-      if (grid.colorType == COLOR_TIME)
-        grid.cells[i].color = grid.palette[grid.cells[i].lifetime];
+      m_grid.cells[i].state = ALIVE;
+      m_grid.cells[i].nextstate = m_grid.cells[i].state;
+      if (m_grid.colorType == COLOR_TIME)
+        m_grid.cells[i].color = m_grid.palette[m_grid.cells[i].lifetime];
       else
       {
-        grid.cells[i].color = randColor();
+        m_grid.cells[i].color = randColor();
       }
     }
   }
 }
 
-
-void presetPalette()
+void CScreensaverBiogenesis::presetPalette()
 {
-  grid.palette[11] = CRGBA(0x22, 0x22, 0x22, 0xFF); 0xFF2222FF; //block
+  m_grid.palette[11] = CRGBA(0x22, 0x22, 0x22, 0xFF); 0xFF2222FF; //block
 
-  grid.palette[2]  = CRGBA(0x66, 0x00, 0xFF, 0xFF);
-  grid.palette[24] = CRGBA(0xFF, 0x33, 0xFF, 0xFF);
+  m_grid.palette[2]  = CRGBA(0x66, 0x00, 0xFF, 0xFF);
+  m_grid.palette[24] = CRGBA(0xFF, 0x33, 0xFF, 0xFF);
 
-  grid.palette[12] = CRGBA(0xFF, 0x00, 0xAA, 0xFF);
+  m_grid.palette[12] = CRGBA(0xFF, 0x00, 0xAA, 0xFF);
   
-  grid.palette[36] = CRGBA(0x00, 0x88, 0x00, 0xFF);
-  grid.palette[5]  = CRGBA(0x00, 0xDD, 0xDD, 0xFF);
+  m_grid.palette[36] = CRGBA(0x00, 0x88, 0x00, 0xFF);
+  m_grid.palette[5]  = CRGBA(0x00, 0xDD, 0xDD, 0xFF);
 
-  grid.palette[10]  = CRGBA(0x00, 0x00, 0xAA, 0xFF);
-  grid.palette[13]  = CRGBA(0xCC, 0x99, 0x00, 0xFF);
+  m_grid.palette[10]  = CRGBA(0x00, 0x00, 0xAA, 0xFF);
+  m_grid.palette[13]  = CRGBA(0xCC, 0x99, 0x00, 0xFF);
 
 }
 
-void CreateGrid()
+void CScreensaverBiogenesis::CreateGrid()
 {
   int i, cellmin, cellmax;
-  cellmin = (int)sqrt((float)(g_iWidth*g_iHeight/(int)(grid.maxSize*grid.maxSize*g_fRatio)));
-  cellmax = (int)sqrt((float)(g_iWidth*g_iHeight/(int)(grid.minSize*grid.minSize*g_fRatio)));
-  grid.cellSizeX = rand()%(cellmax - cellmin + 1) + cellmin;
-  grid.cellSizeY = grid.cellSizeX > 5 ? (int)(g_fRatio * grid.cellSizeX) : grid.cellSizeX;
-  grid.width = g_iWidth/grid.cellSizeX;
-  grid.height = g_iHeight/grid.cellSizeY;
 
-  if (grid.cellSizeX <= grid.cellLineLimit )
-    grid.spacing = 0;
-  else grid.spacing = 1;
+  m_grid.minSize = kodi::GetSettingInt("minsize");
+  m_grid.maxSize = kodi::GetSettingInt("maxsize");
+  m_grid.resetTime = kodi::GetSettingInt("resettime");
+  m_grid.presetChance = kodi::GetSettingInt("presetchance");
+  m_grid.cellLineLimit = kodi::GetSettingInt("lineminsize");
+
+  if (!kodi::GetSettingBoolean("colony"))
+    m_grid.allowedColoring ^= (1 << COLOR_COLONY);
+  if (!kodi::GetSettingBoolean("lifetime"))
+    m_grid.allowedColoring ^= (1 << COLOR_TIME);
+  if (!kodi::GetSettingBoolean("neighbour"))
+    m_grid.allowedColoring ^= (1 << COLOR_NEIGHBORS);
+
+  cellmin = (int)sqrt((float)(m_width*m_height/(int)(m_grid.maxSize*m_grid.maxSize*m_ratio)));
+  cellmax = (int)sqrt((float)(m_width*m_height/(int)(m_grid.minSize*m_grid.minSize*m_ratio)));
+  m_grid.cellSizeX = rand()%(cellmax - cellmin + 1) + cellmin;
+  m_grid.cellSizeY = m_grid.cellSizeX > 5 ? (int)(m_ratio * m_grid.cellSizeX) : m_grid.cellSizeX;
+  m_grid.width = m_width/m_grid.cellSizeX;
+  m_grid.height = m_height/m_grid.cellSizeY;
+
+  if (m_grid.cellSizeX <= m_grid.cellLineLimit )
+    m_grid.spacing = 0;
+  else m_grid.spacing = 1;
 
 
-  if (grid.fullGrid)
-    delete grid.fullGrid;
-  grid.fullGrid = new Cell[grid.width*(grid.height+2)+2]; 
-  memset(grid.fullGrid,0, (grid.width*(grid.height+2)+2) * sizeof(Cell));
-  grid.cells = &grid.fullGrid[grid.width + 1];
-  grid.frameCounter = 0;
+  if (m_grid.fullGrid)
+    delete m_grid.fullGrid;
+  m_grid.fullGrid = new Cell[m_grid.width*(m_grid.height+2)+2]; 
+  memset(m_grid.fullGrid,0, (m_grid.width*(m_grid.height+2)+2) * sizeof(Cell));
+  m_grid.cells = &m_grid.fullGrid[m_grid.width + 1];
+  m_grid.frameCounter = 0;
   do
   {
-    grid.colorType = rand()%3;
-  } while (!(grid.allowedColoring & (1 << grid.colorType)) && grid.allowedColoring != 0);
-  grid.ruleset = 0;
+    m_grid.colorType = rand()%3;
+  } while (!(m_grid.allowedColoring & (1 << m_grid.colorType)) && m_grid.allowedColoring != 0);
+  m_grid.ruleset = 0;
 
   for (i=0; i< PALETTE_SIZE; i++)
-    grid.palette[i] = randColor();
+    m_grid.palette[i] = randColor();
 
-  grid.maxColor = MAX_COLOR;
-  if (grid.colorType == COLOR_TIME && (rand()%100 < grid.presetChance))
+  m_grid.maxColor = MAX_COLOR;
+  if (m_grid.colorType == COLOR_TIME && (rand()%100 < m_grid.presetChance))
     for (i=0; i< MAX_COLOR; i++)
-      grid.palette[i] = COLOR_TIMES[i];
+      m_grid.palette[i] = COLOR_TIMES[i];
   else
-    grid.maxColor += (rand()%2)*(rand()%60);  //make it shimmer sometimes
-  if (grid.colorType == COLOR_TIME && rand()%3)
+    m_grid.maxColor += (rand()%2)*(rand()%60);  //make it shimmer sometimes
+  if (m_grid.colorType == COLOR_TIME && rand()%3)
   {
-    for (i=grid.maxColor-1; i<PALETTE_SIZE; i++)
-      grid.palette[i] = CRGBA::Lerp(grid.palette[grid.maxColor-1],grid.palette[PALETTE_SIZE-1],(float)(i-grid.maxColor+1)/(float)(PALETTE_SIZE-grid.maxColor));
-    grid.maxColor = PALETTE_SIZE;
+    for (i=m_grid.maxColor-1; i<PALETTE_SIZE; i++)
+      m_grid.palette[i] = CRGBA::Lerp(m_grid.palette[m_grid.maxColor-1],m_grid.palette[PALETTE_SIZE-1],(float)(i-m_grid.maxColor+1)/(float)(PALETTE_SIZE-m_grid.maxColor));
+    m_grid.maxColor = PALETTE_SIZE;
   }
-  if (grid.colorType == COLOR_NEIGHBORS)
+  if (m_grid.colorType == COLOR_NEIGHBORS)
   {
-    if (rand()%100 < grid.presetChance)
+    if (rand()%100 < m_grid.presetChance)
       presetPalette();
     reducePalette();
   }  
   SeedGrid();
 }
-
-
 
 int * rotateBits(int * bits)
 {
@@ -233,7 +354,7 @@ void unpackBits(int num, int * bits)
     bits[i] = (num & (1<<i))>>i ;
 }
 // This simplifies the neighbor palette based off of symmetry
-void reducePalette()
+void CScreensaverBiogenesis::reducePalette()
 {
   int i = 0, bits[8], inf, temp;
   for(i = 0; i < 256; i++)
@@ -247,13 +368,11 @@ void reducePalette()
           inf = temp;
       flipBits(bits);
     }
-    grid.palette[i] = grid.palette[inf];
+    m_grid.palette[i] = m_grid.palette[inf];
   }
 }
 
-
-
-void DrawGrid()
+void CScreensaverBiogenesis::DrawGrid()
 {
 #ifdef WIN32
   g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -261,130 +380,129 @@ void DrawGrid()
   g_pContext->IASetVertexBuffers(0, 1, &g_pVBuffer, &strides, &offsets);
   g_pContext->PSSetShader(g_pPShader, NULL, 0);
 #endif
-  for(int i = 0; i<grid.width*grid.height; i++ )
-    if (grid.cells[i].state != DEAD)
-      DrawRectangle((i%grid.width)*grid.cellSizeX,(i/grid.width)*grid.cellSizeY, 
-        grid.cellSizeX - grid.spacing, grid.cellSizeY - grid.spacing, grid.cells[i].color);
+  for(int i = 0; i<m_grid.width*m_grid.height; i++ )
+    if (m_grid.cells[i].state != DEAD)
+      DrawRectangle((i%m_grid.width)*m_grid.cellSizeX,(i/m_grid.width)*m_grid.cellSizeY, 
+        m_grid.cellSizeX - m_grid.spacing, m_grid.cellSizeY - m_grid.spacing, m_grid.cells[i].color);
 }
 
-void UpdateStates()
+void CScreensaverBiogenesis::UpdateStates()
 {
-  for(int i = 0; i<grid.width*grid.height; i++ )
-    grid.cells[i].state = grid.cells[i].nextstate;
+  for(int i = 0; i<m_grid.width*m_grid.height; i++ )
+    m_grid.cells[i].state = m_grid.cells[i].nextstate;
 }
 
-void StepLifetime()
+void CScreensaverBiogenesis::StepLifetime()
 {
   int i;
-  for(i = 0; i<grid.width*grid.height; i++ )
+  for(i = 0; i<m_grid.width*m_grid.height; i++ )
   {
     int count = 0;
-    if(grid.cells[i-grid.width-1].state) count++;
-    if(grid.cells[i-grid.width  ].state) count++;
-    if(grid.cells[i-grid.width+1].state) count++;
-    if(grid.cells[i           -1].state) count++;
-    if(grid.cells[i           +1].state) count++;
-    if(grid.cells[i+grid.width-1].state) count++;
-    if(grid.cells[i+grid.width  ].state) count++;
-    if(grid.cells[i+grid.width+1].state) count++;
+    if(m_grid.cells[i-m_grid.width-1].state) count++;
+    if(m_grid.cells[i-m_grid.width  ].state) count++;
+    if(m_grid.cells[i-m_grid.width+1].state) count++;
+    if(m_grid.cells[i           -1].state) count++;
+    if(m_grid.cells[i           +1].state) count++;
+    if(m_grid.cells[i+m_grid.width-1].state) count++;
+    if(m_grid.cells[i+m_grid.width  ].state) count++;
+    if(m_grid.cells[i+m_grid.width+1].state) count++;
 
-    if(grid.cells[i].state == DEAD)
+    if(m_grid.cells[i].state == DEAD)
     {
-      grid.cells[i].lifetime = 0;
-      if (count == 3 || (grid.ruleset && count == 6))
+      m_grid.cells[i].lifetime = 0;
+      if (count == 3 || (m_grid.ruleset && count == 6))
       {
-        grid.cells[i].nextstate = ALIVE;
-        grid.cells[i].color = grid.palette[0];
+        m_grid.cells[i].nextstate = ALIVE;
+        m_grid.cells[i].color = m_grid.palette[0];
       }
     }
     else 
     {
       if (count == 2 || count == 3)
       {
-        grid.cells[i].lifetime++;
-        if (grid.cells[i].lifetime >= grid.maxColor)
-          grid.cells[i].lifetime = grid.maxColor - 1;
-        grid.cells[i].color = grid.palette[grid.cells[i].lifetime];
+        m_grid.cells[i].lifetime++;
+        if (m_grid.cells[i].lifetime >= m_grid.maxColor)
+          m_grid.cells[i].lifetime = m_grid.maxColor - 1;
+        m_grid.cells[i].color = m_grid.palette[m_grid.cells[i].lifetime];
       }
       else
-        grid.cells[i].nextstate = DEAD;
+        m_grid.cells[i].nextstate = DEAD;
     }
   }
   UpdateStates();
 }
 
-void StepNeighbors()
+void CScreensaverBiogenesis::StepNeighbors()
 {
   UpdateStates();
   int i;
-  for(i = 0; i<grid.width*grid.height; i++ )
+  for(i = 0; i<m_grid.width*m_grid.height; i++ )
   {
     int count = 0;
     int neighbors = 0;
-    if(grid.cells[i-grid.width-1].state) {count++; neighbors |=  1;}
-    if(grid.cells[i-grid.width  ].state) {count++; neighbors |=  2;}
-    if(grid.cells[i-grid.width+1].state) {count++; neighbors |=  4;}
-    if(grid.cells[i           -1].state) {count++; neighbors |=  8;}
-    if(grid.cells[i           +1].state) {count++; neighbors |= 16;}
-    if(grid.cells[i+grid.width-1].state) {count++; neighbors |= 32;}
-    if(grid.cells[i+grid.width  ].state) {count++; neighbors |= 64;}
-    if(grid.cells[i+grid.width+1].state) {count++; neighbors |=128;}
+    if(m_grid.cells[i-m_grid.width-1].state) {count++; neighbors |=  1;}
+    if(m_grid.cells[i-m_grid.width  ].state) {count++; neighbors |=  2;}
+    if(m_grid.cells[i-m_grid.width+1].state) {count++; neighbors |=  4;}
+    if(m_grid.cells[i           -1].state) {count++; neighbors |=  8;}
+    if(m_grid.cells[i           +1].state) {count++; neighbors |= 16;}
+    if(m_grid.cells[i+m_grid.width-1].state) {count++; neighbors |= 32;}
+    if(m_grid.cells[i+m_grid.width  ].state) {count++; neighbors |= 64;}
+    if(m_grid.cells[i+m_grid.width+1].state) {count++; neighbors |=128;}
 
-    if(grid.cells[i].state == DEAD)
+    if(m_grid.cells[i].state == DEAD)
     {
-      if (count == 3 || (grid.ruleset && (neighbors == 0x7E || neighbors == 0xDB)))
+      if (count == 3 || (m_grid.ruleset && (neighbors == 0x7E || neighbors == 0xDB)))
       {
-        grid.cells[i].nextstate = ALIVE;
-        grid.cells[i].color = grid.palette[neighbors];
+        m_grid.cells[i].nextstate = ALIVE;
+        m_grid.cells[i].color = m_grid.palette[neighbors];
       }
     }
     else 
     {
       if (count != 2 && count != 3)
-        grid.cells[i].nextstate = DEAD;
-      grid.cells[i].color = grid.palette[neighbors];
+        m_grid.cells[i].nextstate = DEAD;
+      m_grid.cells[i].color = m_grid.palette[neighbors];
     }
   }
 }
 
-
-void StepColony()
+void CScreensaverBiogenesis::StepColony()
 {
   CRGBA foundColors[8];
   int i;
-  for(i = 0; i<grid.width*grid.height; i++ )
+  for(i = 0; i<m_grid.width*m_grid.height; i++ )
   {
     int count = 0;
-    if(grid.cells[i-grid.width-1].state) foundColors[count++] = grid.cells[i-grid.width-1].color;
-    if(grid.cells[i-grid.width  ].state) foundColors[count++] = grid.cells[i-grid.width  ].color;
-    if(grid.cells[i-grid.width+1].state) foundColors[count++] = grid.cells[i-grid.width+1].color;
-    if(grid.cells[i           -1].state) foundColors[count++] = grid.cells[i           -1].color;
-    if(grid.cells[i           +1].state) foundColors[count++] = grid.cells[i           +1].color;
-    if(grid.cells[i+grid.width-1].state) foundColors[count++] = grid.cells[i+grid.width-1].color;
-    if(grid.cells[i+grid.width  ].state) foundColors[count++] = grid.cells[i+grid.width  ].color;
-    if(grid.cells[i+grid.width+1].state) foundColors[count++] = grid.cells[i+grid.width+1].color;
+    if(m_grid.cells[i-m_grid.width-1].state) foundColors[count++] = m_grid.cells[i-m_grid.width-1].color;
+    if(m_grid.cells[i-m_grid.width  ].state) foundColors[count++] = m_grid.cells[i-m_grid.width  ].color;
+    if(m_grid.cells[i-m_grid.width+1].state) foundColors[count++] = m_grid.cells[i-m_grid.width+1].color;
+    if(m_grid.cells[i           -1].state) foundColors[count++] = m_grid.cells[i           -1].color;
+    if(m_grid.cells[i           +1].state) foundColors[count++] = m_grid.cells[i           +1].color;
+    if(m_grid.cells[i+m_grid.width-1].state) foundColors[count++] = m_grid.cells[i+m_grid.width-1].color;
+    if(m_grid.cells[i+m_grid.width  ].state) foundColors[count++] = m_grid.cells[i+m_grid.width  ].color;
+    if(m_grid.cells[i+m_grid.width+1].state) foundColors[count++] = m_grid.cells[i+m_grid.width+1].color;
 
-    if(grid.cells[i].state == DEAD)
+    if(m_grid.cells[i].state == DEAD)
     {
-      if (count == 3 || (grid.ruleset && count == 6))
+      if (count == 3 || (m_grid.ruleset && count == 6))
       {
         if (foundColors[0] == foundColors[2])
-          grid.cells[i].color = foundColors[0];
+          m_grid.cells[i].color = foundColors[0];
         else 
-          grid.cells[i].color = foundColors[1];
-        grid.cells[i].nextstate = ALIVE;
+          m_grid.cells[i].color = foundColors[1];
+        m_grid.cells[i].nextstate = ALIVE;
       }
     }
     else if (count != 2 && count != 3)
-      grid.cells[i].nextstate = DEAD;
+      m_grid.cells[i].nextstate = DEAD;
     
   }
   UpdateStates();
 }
 
-void Step()
+void CScreensaverBiogenesis::Step()
 {
-  switch(grid.colorType)
+  switch(m_grid.colorType)
   {
     case COLOR_COLONY:    StepColony(); break;
     case COLOR_TIME:    StepLifetime(); break;
@@ -392,7 +510,7 @@ void Step()
   }
 }
 
-CRGBA HSVtoRGB( float h, float s, float v )
+CRGBA CScreensaverBiogenesis::HSVtoRGB( float h, float s, float v )
 {
   int i;
   float f;
@@ -423,7 +541,7 @@ CRGBA HSVtoRGB( float h, float s, float v )
   return CRGBA(m,p,q,255);
 }
 
-void DrawRectangle(int x, int y, int w, int h, const CRGBA& dwColour)
+void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRGBA& dwColour)
 {
   //Store each point of the triangle together with it's colour
   CUSTOMVERTEX cvVertices[] =
@@ -521,7 +639,7 @@ const BYTE PixelShader[] =
     171, 171
 };
 
-void InitDXStuff(void)
+void CScreensaverBiogenesis::InitDXStuff(void)
 {
   ID3D11Device* pDevice = nullptr;
   g_pContext->GetDevice(&pDevice);
@@ -535,101 +653,4 @@ void InitDXStuff(void)
 }
 #endif // WIN32
 
-void SetDefaults()
-{
-  grid.minSize = 50;
-  grid.maxSize = 250;
-  grid.spacing = 1;
-  grid.resetTime = 2000;
-  grid.presetChance = 30;
-  grid.allowedColoring = 7;
-  grid.cellLineLimit = 3;
-}
-
-////////////////////////////////////////////////////////////////////////////
-// XBMC has loaded us into memory, we should set our core values
-// here and load any settings we may have from our config file
-//
-ADDON_STATUS ADDON_Create(void* hdl, void* props)
-{
-  if (!props)
-    return ADDON_STATUS_UNKNOWN;
-
-  SCR_PROPS* scrprops = (SCR_PROPS*)props;
-
-  g_iWidth = scrprops->width;
-  g_iHeight  = scrprops->height;
-  g_fRatio = (float)g_iWidth/(float)g_iHeight;
-  SetDefaults();
-  CreateGrid();
-#ifdef WIN32
-  g_pContext = reinterpret_cast<ID3D11DeviceContext*>(scrprops->device);
-  InitDXStuff();
-#endif
-  return ADDON_STATUS_NEED_SETTINGS;
-}
-
-// XBMC tells us we should get ready
-// to start rendering. This function
-// is called once when the screensaver
-// is activated by XBMC.
-extern "C" void Start()
-{
-  SeedGrid();
-}
-
-// XBMC tells us to render a frame of
-// our screensaver. This is called on
-// each frame render in XBMC, you should
-// render a single frame only - the DX
-// device will already have been cleared.
-extern "C" void Render()
-{
-  if (grid.frameCounter++ == grid.resetTime)
-    CreateGrid();
-  Step();
-  DrawGrid();
-}
-
-// XBMC tells us to stop the screensaver
-// we should free any memory and release
-// any resources we have created.
-extern "C" void ADDON_Stop()
-{
-  delete grid.fullGrid;
-#ifdef WIN32
-  SAFE_RELEASE(g_pPShader);
-  SAFE_RELEASE(g_pVBuffer);
-#endif
-}
-
-extern "C" void ADDON_Destroy()
-{
-}
-
-extern "C" ADDON_STATUS ADDON_GetStatus()
-{
-  return ADDON_STATUS_OK;
-}
-
-extern "C" ADDON_STATUS ADDON_SetSetting(const char *strSetting, const void *value)
-{
-  if (strcmp(strSetting, "minsize") == 0)
-    grid.minSize = *(int*)value;
-  if (strcmp(strSetting, "maxsize") == 0)
-    grid.maxSize = *(int*)value;
-  if (strcmp(strSetting, "resettime") == 0)
-    grid.resetTime = *(int*)value;
-  if (strcmp(strSetting, "presetchance") == 0)
-    grid.presetChance = 100*(*(float*)value);
-  if (strcmp(strSetting, "lineminsize") == 0)
-    grid.cellLineLimit = *(int*)value;
-  if (strcmp(strSetting, "colony") == 0 && !*(bool*)value)
-    grid.allowedColoring ^= (1 << COLOR_COLONY);
-  if (strcmp(strSetting, "lifetime") == 0 && !*(bool*)value)
-    grid.allowedColoring ^= (1 << COLOR_TIME);
-  if (strcmp(strSetting, "neighbour") == 0 && !*(bool*)value)
-    grid.allowedColoring ^= (1 << COLOR_NEIGHBORS);
-
-  return ADDON_STATUS_OK;
-}
+ADDONCREATOR(CScreensaverBiogenesis);
