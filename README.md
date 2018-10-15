@@ -2,8 +2,8 @@
 
 This is a [Kodi](http://kodi.tv) screensaver addon.
 
-[![Build Status](https://travis-ci.org/notspiff/screensaver.biogenesis.svg?branch=master)](https://travis-ci.org/notspiff/screensaver.biogenesis)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/notspiff/screensaver.biogenesis?svg=true)](https://ci.appveyor.com/project/notspiff/screensaver-biogenesis)
+[![Build Status](https://travis-ci.org/xbmc/screensaver.biogenesis.svg?branch=master)](https://travis-ci.org/xbmc/screensaver.biogenesis)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/xbmc/screensaver.biogenesis?svg=true)](https://ci.appveyor.com/project/xbmc/screensaver-biogenesis)
 
 ## Build instructions
 
@@ -17,7 +17,7 @@ The following instructions assume you will have built Kodi already in the `kodi-
 suggested by the README.
 
 1. `git clone https://github.com/xbmc/xbmc.git`
-2. `git clone https://github.com/notspiff/screensaver.biogenesis.git`
+2. `git clone https://github.com/xbmc/screensaver.biogenesis.git`
 3. `cd screensaver.biogenesis && mkdir build && cd build`
 4. `cmake -DADDONS_TO_BUILD=screensaver.biogenesis -DADDON_SRC_PREFIX=../.. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../../xbmc/kodi-build/addons -DPACKAGE_ZIP=1 ../../xbmc/cmake/addons`
 5. `make`
