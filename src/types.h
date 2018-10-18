@@ -103,35 +103,6 @@ public:
         f32 z;
 };
 
-////////////////////////////////////////////////////////////////////////////
-//
-class CMatrix
-{
-public:
-	void		Identity(void);
-	void		Rotate(f32 angleX, f32 angleY, f32 angleZ);
-	void		Scale(f32 sx, f32 sy, f32 sz)					{ _11 *= sx; _22 *= sy; _33 *= sz; }
-	void		Multiply(const CMatrix& m1, const CMatrix& m2);
-	CVector operator * ( const CVector& v ) const;
-
-        f32 _11;
-        f32 _12;
-        f32 _13;
-        f32 _14;
-        f32 _21;
-        f32 _22;
-        f32 _23;
-        f32 _24;
-        f32 _31;
-        f32 _32;
-        f32 _33;
-        f32 _34;
-        f32 _41;
-        f32 _42;
-        f32 _43;
-        f32 _44;
-};
-
 /***************************** G L O B A L S *******************************/
 /***************************** I N L I N E S *******************************/
 
@@ -166,43 +137,6 @@ inline u8 FloatToByte(f32 fval)
 inline u32	CRGBA::RenderColor(void) const
 {
 	return ((((u32)FloatToByte(a) << 24) | ( (u32)FloatToByte(r) << 16) | ( (u32)FloatToByte(g) << 8) |  (u32)FloatToByte(b)));
-}
-
-////////////////////////////////////////////////////////////////////////////
-//
-inline void CMatrix::Identity(void)
-{	
-	_12 = _13 = _14 = 0.0f;
-	_21 = _23 = _24 = 0.0f;
-	_31 = _32 = _34 = 0.0f;
-	_41 = _42 = _43 = 0.0f;
-	_11 = _22 = _33 = _44 = 1.0f;
-}
-
-////////////////////////////////////////////////////////////////////////////
-// Create a rotation matrix
-//
-inline void	CMatrix::Rotate(f32 angleX, f32 angleY, f32 angleZ)
-{
-  //D3DXMatrixRotationYawPitchRoll(this, DEGTORAD(angleX), DEGTORAD(angleY), DEGTORAD(angleZ));
-}
-
-////////////////////////////////////////////////////////////////////////////
-//
-inline CVector CMatrix::operator * ( const CVector& v ) const
-{
-	return CVector(	v.x * _11 + v.y * _21 + v.z * _31 + _41,
-					v.x * _12 + v.y * _22 + v.z * _32 + _42,
-					v.x * _13 + v.y * _23 + v.z * _33 + _43);
-}
-
-////////////////////////////////////////////////////////////////////////////
-//
-inline void CMatrix::Multiply(const CMatrix& m1, const CMatrix& m2)
-{
-	CMatrix m;
-	//D3DXMatrixMultiply(&m, &m2, &m1);
-	*this = m;
 }
 
 ////////////////////////////////////////////////////////////////////////////
