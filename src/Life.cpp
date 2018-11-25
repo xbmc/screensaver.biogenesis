@@ -27,11 +27,7 @@
 #ifdef WIN32
 #include <d3d11.h>
 #else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
+#include "shaders/GUIShader.h"
 #endif
 
 struct CUSTOMVERTEX
@@ -52,6 +48,8 @@ struct Cell
 #define COLOR_TIME 0
 #define COLOR_COLONY 1
 #define COLOR_NEIGHBORS 2
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #ifdef WIN32
 ID3D11DeviceContext* g_pContext = nullptr;
@@ -81,7 +79,7 @@ struct Grid
   Cell * fullGrid;
 };
 
-class CScreensaverBiogenesis
+class ATTRIBUTE_HIDDEN CScreensaverBiogenesis
   : public kodi::addon::CAddonBase,
     public kodi::addon::CInstanceScreensaver
 {
@@ -117,6 +115,10 @@ private:
   void DrawRectangle(int x, int y, int w, int h, const CRGBA& dwColour);
 #ifdef WIN32
   void InitDXStuff(void);
+#else
+  CGUIShader* m_shader;
+  GLuint m_vertexVBO;
+  GLuint m_indexVBO;
 #endif
 };
 
@@ -153,6 +155,11 @@ CScreensaverBiogenesis::CScreensaverBiogenesis()
 #ifdef WIN32
   g_pContext = reinterpret_cast<ID3D11DeviceContext*>(Device());
   InitDXStuff();
+#else
+  m_shader = new CGUIShader("vert.glsl", "frag.glsl");
+  m_shader->CompileAndLink();
+  glGenBuffers(1, &m_vertexVBO);
+  glGenBuffers(1, &m_indexVBO);
 #endif
 }
 
@@ -189,6 +196,12 @@ void CScreensaverBiogenesis::Stop()
 #ifdef WIN32
   SAFE_RELEASE(g_pPShader);
   SAFE_RELEASE(g_pVBuffer);
+#else
+  delete m_shader;
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &m_vertexVBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &m_indexVBO);
 #endif
 }
 
@@ -556,13 +569,46 @@ void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRG
     {(float) x + w, (float)     y, 0.0f, dwColour,},
   };
 #ifndef WIN32
-    glBegin(GL_TRIANGLE_STRIP);
-    for (size_t j=0;j<4;++j)
-    {
-      glColor3f(cvVertices[j].color.r, cvVertices[j].color.g, cvVertices[j].color.b);
-      glVertex2f(cvVertices[j].x, cvVertices[j].y);
-    }
-    glEnd();
+  m_shader->PushMatrix();
+  m_shader->Enable();
+
+  GLfloat x1 = -1.0 + 2.0*x/m_width;
+  GLfloat y1 = -1.0 + 2.0*y/m_height;
+  GLfloat x2 = -1.0 + 2.0*(x+w)/m_width;
+  GLfloat y2 = -1.0 + 2.0*(y+h)/m_height;
+
+  struct PackedVertex
+  {
+    GLfloat x, y, z;
+    GLfloat r, g, b;
+  } vertex[4] = {{x1, y1, 0.0, dwColour.r, dwColour.g, dwColour.b},
+                 {x2, y1, 0.0, dwColour.r, dwColour.g, dwColour.b},
+                 {x2, y2, 0.0, dwColour.r, dwColour.g, dwColour.b},
+                 {x1, y2, 0.0, dwColour.r, dwColour.g, dwColour.b}};
+
+  GLubyte idx[] = {0, 1, 2, 2, 3, 0};
+
+  GLint posLoc = m_shader->GetPosLoc();
+  GLint colLoc = m_shader->GetColLoc();
+
+  glBindBuffer(GL_ARRAY_BUFFER, m_vertexVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(PackedVertex)*4, &vertex[0], GL_STATIC_DRAW);
+
+  glVertexAttribPointer(posLoc, 3, GL_FLOAT, 0, sizeof(PackedVertex), BUFFER_OFFSET(offsetof(PackedVertex, x)));
+  glVertexAttribPointer(colLoc, 3, GL_FLOAT, 0, sizeof(PackedVertex), BUFFER_OFFSET(offsetof(PackedVertex, r)));
+
+  glEnableVertexAttribArray(posLoc);
+  glEnableVertexAttribArray(colLoc);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*6, idx, GL_STATIC_DRAW);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+
+  glDisableVertexAttribArray(posLoc);
+  glDisableVertexAttribArray(colLoc);
+
+  m_shader->Disable();
+  m_shader->PopMatrix();
 #else
     D3D11_MAPPED_SUBRESOURCE res = {};
     if (SUCCEEDED(g_pContext->Map(g_pVBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &res)))
