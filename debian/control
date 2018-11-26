@@ -1,0 +1,22 @@
+Source: kodi-screensaver-biogenesis
+Priority: extra
+Maintainer: Nobody <nobody@kodi.tv>
+Build-Depends: debhelper (>= 9.0.0), cmake, kodi-addon-dev,
+               libgles2-mesa-dev [arm64 armhf], libgl1-mesa-dev [i386 amd64]
+Standards-Version: 3.9.5
+Section: libs
+Homepage: http://kodi.tv
+
+Package: kodi-screensaver-biogenesis
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: BioGenesis screensaver for Kodi
+ BioGenesis screensaver for Kodi
+
+Package: kodi-screensaver-biogenesis-dbg
+Section: debug
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: debug symbols for BioGenesis screensaver for Kodi
+ debug symbols for BioGenesis screensaver for Kodi
