@@ -22,19 +22,11 @@ if(NOT WIN32)
   endif()
 endif()
 
-include_directories(${includes} ${KODI_INCLUDE_DIR}/..) # Hack way with "/..", need bigger Kodi cmake rework to match right include ways
+include_directories(${includes} ${KODI_INCLUDE_DIR}/..  # Hack way with "/..", need bigger Kodi cmake rework to match right include ways
+                                ${PROJECT_SOURCE_DIR}/lib)
 
 set(BIOGENESIS_SOURCES src/Life.cpp)
 set(BIOGENESIS_HEADERS src/types.h)
-
-if(NOT WIN32)
-  list(APPEND BIOGENESIS_SOURCES src/shaders/GUIShader.cpp
-                                 src/shaders/Matrix.cpp
-                                 src/shaders/Shader.cpp)
-  list(APPEND BIOGENESIS_HEADERS src/shaders/GUIShader.h
-                                 src/shaders/Matrix.h
-                                 src/shaders/Shader.h)
-endif()
 
 build_addon(screensaver.biogenesis BIOGENESIS DEPLIBS)
 

@@ -1,7 +1,7 @@
 /*
  * BioGenesis Screensaver for XBox Media Center
  * Copyright (c) 2004 Team XBMC
- * Copyright (c) 2016-2017 Team Kodi
+ * Copyright (c) 2016-2019 Team Kodi
  *
  * Ver 1.0 2007-02-12 by Asteron  http://asteron.projects.googlepages.com/home
  *
@@ -27,7 +27,8 @@
 #ifdef WIN32
 #include <d3d11.h>
 #else
-#include "shaders/GUIShader.h"
+#include <kodi/gui/OpenGL/GL.h>
+#include <kodi/gui/OpenGL/Shader.h>
 #endif
 
 struct CUSTOMVERTEX
@@ -40,7 +41,7 @@ struct Cell
 {
   CRGBA color; // The cell color.
   short lifetime;
-  char nextstate, state; 
+  char nextstate, state;
 };
 
 #define DEAD 0
@@ -80,15 +81,25 @@ struct Grid
 };
 
 class ATTRIBUTE_HIDDEN CScreensaverBiogenesis
-  : public kodi::addon::CAddonBase,
-    public kodi::addon::CInstanceScreensaver
+  : public kodi::addon::CAddonBase
+  , public kodi::addon::CInstanceScreensaver
+#ifndef WIN32
+  , public kodi::gui::gl::CShaderProgram
+#endif
 {
 public:
   CScreensaverBiogenesis();
 
-  virtual bool Start() override;
-  virtual void Stop() override;
-  virtual void Render() override;
+  // kodi::addon::CInstanceScreensaver
+  bool Start() override;
+  void Stop() override;
+  void Render() override;
+
+#ifndef WIN32
+  // kodi::gui::gl::CShaderProgram
+  void OnCompiledAndLinked() override;
+  bool OnEnabled() { return true; };
+#endif
 
 private:
   static const int PALETTE_SIZE;
@@ -116,14 +127,15 @@ private:
 #ifdef WIN32
   void InitDXStuff(void);
 #else
-  CGUIShader* m_shader;
+  GLint m_aPosition = -1;
+  GLint m_aColor = -1;
   GLuint m_vertexVBO;
   GLuint m_indexVBO;
 #endif
 };
 
 const int CScreensaverBiogenesis::PALETTE_SIZE = sizeof(Grid::palette)/sizeof(CRGBA);
-CRGBA COLOR_TIMES[] = {  
+CRGBA COLOR_TIMES[] = {
   CRGBA(30,30,200,255),
   CRGBA(120,10,255,255),
   CRGBA(50,100,250,255),
@@ -155,11 +167,6 @@ CScreensaverBiogenesis::CScreensaverBiogenesis()
 #ifdef WIN32
   g_pContext = reinterpret_cast<ID3D11DeviceContext*>(Device());
   InitDXStuff();
-#else
-  m_shader = new CGUIShader("vert.glsl", "frag.glsl");
-  m_shader->CompileAndLink();
-  glGenBuffers(1, &m_vertexVBO);
-  glGenBuffers(1, &m_indexVBO);
 #endif
 }
 
@@ -169,7 +176,19 @@ CScreensaverBiogenesis::CScreensaverBiogenesis()
 // is activated by Kodi.
 bool CScreensaverBiogenesis::Start()
 {
+#ifndef WIN32
+  if (!CreateShader("vert.glsl", "frag.glsl") || !CompileAndLink())
+  {
+    kodi::Log(ADDON_LOG_ERROR, "Failed to create and compile shader");
+    return false;
+  }
+
+  glGenBuffers(1, &m_vertexVBO);
+  glGenBuffers(1, &m_indexVBO);
+#endif
+
   SeedGrid();
+
   return true;
 }
 
@@ -180,6 +199,11 @@ bool CScreensaverBiogenesis::Start()
 // device will already have been cleared.
 void CScreensaverBiogenesis::Render()
 {
+#ifndef WIN32
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+#endif
+
   if (m_grid.frameCounter++ == m_grid.resetTime)
     CreateGrid();
   Step();
@@ -197,7 +221,6 @@ void CScreensaverBiogenesis::Stop()
   SAFE_RELEASE(g_pPShader);
   SAFE_RELEASE(g_pVBuffer);
 #else
-  delete m_shader;
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &m_vertexVBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -255,7 +278,7 @@ void CScreensaverBiogenesis::presetPalette()
   m_grid.palette[24] = CRGBA(0xFF, 0x33, 0xFF, 0xFF);
 
   m_grid.palette[12] = CRGBA(0xFF, 0x00, 0xAA, 0xFF);
-  
+
   m_grid.palette[36] = CRGBA(0x00, 0x88, 0x00, 0xFF);
   m_grid.palette[5]  = CRGBA(0x00, 0xDD, 0xDD, 0xFF);
 
@@ -295,7 +318,7 @@ void CScreensaverBiogenesis::CreateGrid()
 
   if (m_grid.fullGrid)
     delete m_grid.fullGrid;
-  m_grid.fullGrid = new Cell[m_grid.width*(m_grid.height+2)+2]; 
+  m_grid.fullGrid = new Cell[m_grid.width*(m_grid.height+2)+2];
   memset(m_grid.fullGrid,0, (m_grid.width*(m_grid.height+2)+2) * sizeof(Cell));
   m_grid.cells = &m_grid.fullGrid[m_grid.width + 1];
   m_grid.frameCounter = 0;
@@ -325,7 +348,7 @@ void CScreensaverBiogenesis::CreateGrid()
     if (rand()%100 < m_grid.presetChance)
       presetPalette();
     reducePalette();
-  }  
+  }
   SeedGrid();
 }
 
@@ -336,7 +359,7 @@ int * rotateBits(int * bits)
   bits[0] = bits[2];
   bits[2] = bits[7];
   bits[7] = bits[5];
-  bits[5] = temp;  
+  bits[5] = temp;
   temp = bits[1];
   bits[1] = bits[4];
   bits[4] = bits[6];
@@ -366,7 +389,7 @@ int packBits(int * bits)
   return packed;
 }
 void unpackBits(int num, int * bits)
-{  
+{
   for(int i=0; i<8; i++)
     bits[i] = (num & (1<<i))>>i ;
 }
@@ -399,7 +422,7 @@ void CScreensaverBiogenesis::DrawGrid()
 #endif
   for(int i = 0; i<m_grid.width*m_grid.height; i++ )
     if (m_grid.cells[i].state != DEAD)
-      DrawRectangle((i%m_grid.width)*m_grid.cellSizeX,(i/m_grid.width)*m_grid.cellSizeY, 
+      DrawRectangle((i%m_grid.width)*m_grid.cellSizeX,(i/m_grid.width)*m_grid.cellSizeY,
         m_grid.cellSizeX - m_grid.spacing, m_grid.cellSizeY - m_grid.spacing, m_grid.cells[i].color);
 }
 
@@ -433,7 +456,7 @@ void CScreensaverBiogenesis::StepLifetime()
         m_grid.cells[i].color = m_grid.palette[0];
       }
     }
-    else 
+    else
     {
       if (count == 2 || count == 3)
       {
@@ -474,7 +497,7 @@ void CScreensaverBiogenesis::StepNeighbors()
         m_grid.cells[i].color = m_grid.palette[neighbors];
       }
     }
-    else 
+    else
     {
       if (count != 2 && count != 3)
         m_grid.cells[i].nextstate = DEAD;
@@ -505,14 +528,14 @@ void CScreensaverBiogenesis::StepColony()
       {
         if (foundColors[0] == foundColors[2])
           m_grid.cells[i].color = foundColors[0];
-        else 
+        else
           m_grid.cells[i].color = foundColors[1];
         m_grid.cells[i].nextstate = ALIVE;
       }
     }
     else if (count != 2 && count != 3)
       m_grid.cells[i].nextstate = DEAD;
-    
+
   }
   UpdateStates();
 }
@@ -545,7 +568,7 @@ CRGBA CScreensaverBiogenesis::HSVtoRGB( float h, float s, float v )
   p = (int)(m * ( 1 - s ));
   q = (int)(m * ( 1 - s * f ));
   t = (int)(m * ( 1 - s * ( 1 - f ) ));
-  
+
 
   switch( i ) {
     case 0: return CRGBA(m,t,p,255);
@@ -569,8 +592,7 @@ void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRG
     {(float) x + w, (float)     y, 0.0f, dwColour,},
   };
 #ifndef WIN32
-  m_shader->PushMatrix();
-  m_shader->Enable();
+  Enable();
 
   GLfloat x1 = -1.0 + 2.0*x/m_width;
   GLfloat y1 = -1.0 + 2.0*y/m_height;
@@ -588,104 +610,100 @@ void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRG
 
   GLubyte idx[] = {0, 1, 2, 2, 3, 0};
 
-  GLint posLoc = m_shader->GetPosLoc();
-  GLint colLoc = m_shader->GetColLoc();
-
   glBindBuffer(GL_ARRAY_BUFFER, m_vertexVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(PackedVertex)*4, &vertex[0], GL_STATIC_DRAW);
 
-  glVertexAttribPointer(posLoc, 3, GL_FLOAT, 0, sizeof(PackedVertex), BUFFER_OFFSET(offsetof(PackedVertex, x)));
-  glVertexAttribPointer(colLoc, 3, GL_FLOAT, 0, sizeof(PackedVertex), BUFFER_OFFSET(offsetof(PackedVertex, r)));
+  glVertexAttribPointer(m_aPosition, 3, GL_FLOAT, 0, sizeof(PackedVertex), BUFFER_OFFSET(offsetof(PackedVertex, x)));
+  glVertexAttribPointer(m_aColor, 3, GL_FLOAT, 0, sizeof(PackedVertex), BUFFER_OFFSET(offsetof(PackedVertex, r)));
 
-  glEnableVertexAttribArray(posLoc);
-  glEnableVertexAttribArray(colLoc);
+  glEnableVertexAttribArray(m_aPosition);
+  glEnableVertexAttribArray(m_aColor);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*6, idx, GL_STATIC_DRAW);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
-  glDisableVertexAttribArray(posLoc);
-  glDisableVertexAttribArray(colLoc);
+  glDisableVertexAttribArray(m_aPosition);
+  glDisableVertexAttribArray(m_aColor);
 
-  m_shader->Disable();
-  m_shader->PopMatrix();
+  Disable();
 #else
-    D3D11_MAPPED_SUBRESOURCE res = {};
-    if (SUCCEEDED(g_pContext->Map(g_pVBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &res)))
-    {
-      memcpy(res.pData, cvVertices, sizeof(cvVertices));
-      g_pContext->Unmap(g_pVBuffer, 0);
-    }
-    g_pContext->Draw(4, 0);
+  D3D11_MAPPED_SUBRESOURCE res = {};
+  if (SUCCEEDED(g_pContext->Map(g_pVBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &res)))
+  {
+    memcpy(res.pData, cvVertices, sizeof(cvVertices));
+    g_pContext->Unmap(g_pVBuffer, 0);
+  }
+  g_pContext->Draw(4, 0);
 #endif
 }
 
 #ifdef WIN32
 const BYTE PixelShader[] =
 {
-     68,  88,  66,  67,  18, 124, 
-    182,  35,  30, 142, 196, 211, 
-     95, 130,  91, 204,  99,  13, 
-    249,   8,   1,   0,   0,   0, 
-    124,   1,   0,   0,   4,   0, 
-      0,   0,  48,   0,   0,   0, 
-    124,   0,   0,   0, 188,   0, 
-      0,   0,  72,   1,   0,   0, 
-     65, 111, 110,  57,  68,   0, 
-      0,   0,  68,   0,   0,   0, 
-      0,   2, 255, 255,  32,   0, 
-      0,   0,  36,   0,   0,   0, 
-      0,   0,  36,   0,   0,   0, 
-     36,   0,   0,   0,  36,   0, 
-      0,   0,  36,   0,   0,   0, 
-     36,   0,   0,   2, 255, 255, 
-     31,   0,   0,   2,   0,   0, 
-      0, 128,   0,   0,  15, 176, 
-      1,   0,   0,   2,   0,   8, 
-     15, 128,   0,   0, 228, 176, 
-    255, 255,   0,   0,  83,  72, 
-     68,  82,  56,   0,   0,   0, 
-     64,   0,   0,   0,  14,   0, 
-      0,   0,  98,  16,   0,   3, 
-    242,  16,  16,   0,   1,   0, 
-      0,   0, 101,   0,   0,   3, 
-    242,  32,  16,   0,   0,   0, 
-      0,   0,  54,   0,   0,   5, 
-    242,  32,  16,   0,   0,   0, 
-      0,   0,  70,  30,  16,   0, 
-      1,   0,   0,   0,  62,   0, 
-      0,   1,  73,  83,  71,  78, 
-    132,   0,   0,   0,   4,   0, 
-      0,   0,   8,   0,   0,   0, 
-    104,   0,   0,   0,   0,   0, 
-      0,   0,   1,   0,   0,   0, 
-      3,   0,   0,   0,   0,   0, 
-      0,   0,  15,   0,   0,   0, 
-    116,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0, 
-      3,   0,   0,   0,   1,   0, 
-      0,   0,  15,  15,   0,   0, 
-    122,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0, 
-      3,   0,   0,   0,   2,   0, 
-      0,   0,   3,   0,   0,   0, 
-    122,   0,   0,   0,   1,   0, 
-      0,   0,   0,   0,   0,   0, 
-      3,   0,   0,   0,   2,   0, 
-      0,   0,  12,   0,   0,   0, 
-     83,  86,  95,  80,  79,  83, 
-     73,  84,  73,  79,  78,   0, 
-     67,  79,  76,  79,  82,   0, 
-     84,  69,  88,  67,  79,  79, 
-     82,  68,   0, 171,  79,  83, 
-     71,  78,  44,   0,   0,   0, 
-      1,   0,   0,   0,   8,   0, 
-      0,   0,  32,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0, 
-      0,   0,   3,   0,   0,   0, 
-      0,   0,   0,   0,  15,   0, 
-      0,   0,  83,  86,  95,  84, 
-     65,  82,  71,  69,  84,   0, 
+     68,  88,  66,  67,  18, 124,
+    182,  35,  30, 142, 196, 211,
+     95, 130,  91, 204,  99,  13,
+    249,   8,   1,   0,   0,   0,
+    124,   1,   0,   0,   4,   0,
+      0,   0,  48,   0,   0,   0,
+    124,   0,   0,   0, 188,   0,
+      0,   0,  72,   1,   0,   0,
+     65, 111, 110,  57,  68,   0,
+      0,   0,  68,   0,   0,   0,
+      0,   2, 255, 255,  32,   0,
+      0,   0,  36,   0,   0,   0,
+      0,   0,  36,   0,   0,   0,
+     36,   0,   0,   0,  36,   0,
+      0,   0,  36,   0,   0,   0,
+     36,   0,   0,   2, 255, 255,
+     31,   0,   0,   2,   0,   0,
+      0, 128,   0,   0,  15, 176,
+      1,   0,   0,   2,   0,   8,
+     15, 128,   0,   0, 228, 176,
+    255, 255,   0,   0,  83,  72,
+     68,  82,  56,   0,   0,   0,
+     64,   0,   0,   0,  14,   0,
+      0,   0,  98,  16,   0,   3,
+    242,  16,  16,   0,   1,   0,
+      0,   0, 101,   0,   0,   3,
+    242,  32,  16,   0,   0,   0,
+      0,   0,  54,   0,   0,   5,
+    242,  32,  16,   0,   0,   0,
+      0,   0,  70,  30,  16,   0,
+      1,   0,   0,   0,  62,   0,
+      0,   1,  73,  83,  71,  78,
+    132,   0,   0,   0,   4,   0,
+      0,   0,   8,   0,   0,   0,
+    104,   0,   0,   0,   0,   0,
+      0,   0,   1,   0,   0,   0,
+      3,   0,   0,   0,   0,   0,
+      0,   0,  15,   0,   0,   0,
+    116,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,
+      3,   0,   0,   0,   1,   0,
+      0,   0,  15,  15,   0,   0,
+    122,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,
+      3,   0,   0,   0,   2,   0,
+      0,   0,   3,   0,   0,   0,
+    122,   0,   0,   0,   1,   0,
+      0,   0,   0,   0,   0,   0,
+      3,   0,   0,   0,   2,   0,
+      0,   0,  12,   0,   0,   0,
+     83,  86,  95,  80,  79,  83,
+     73,  84,  73,  79,  78,   0,
+     67,  79,  76,  79,  82,   0,
+     84,  69,  88,  67,  79,  79,
+     82,  68,   0, 171,  79,  83,
+     71,  78,  44,   0,   0,   0,
+      1,   0,   0,   0,   8,   0,
+      0,   0,  32,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,
+      0,   0,   3,   0,   0,   0,
+      0,   0,   0,   0,  15,   0,
+      0,   0,  83,  86,  95,  84,
+     65,  82,  71,  69,  84,   0,
     171, 171
 };
 
@@ -700,6 +718,13 @@ void CScreensaverBiogenesis::InitDXStuff(void)
   pDevice->CreatePixelShader(PixelShader, sizeof(PixelShader), nullptr, &g_pPShader);
 
   SAFE_RELEASE(pDevice);
+}
+#else
+void CScreensaverBiogenesis::OnCompiledAndLinked()
+{
+  // Variables passed directly to the Vertex shader
+  m_aPosition = glGetAttribLocation(ProgramHandle(), "a_position");
+  m_aColor = glGetAttribLocation(ProgramHandle(), "a_color");
 }
 #endif // WIN32
 
