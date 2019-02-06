@@ -1,16 +1,33 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="screensaver.biogenesis"
-  version="2.1.0"
+  version="2.2.0"
   name="BioGenesis"
-  provider-name="spiff">
+  provider-name="Team Kodi">
   <requires>@ADDON_DEPENDS@</requires>
   <extension
     point="xbmc.ui.screensaver"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
     <summary>BioGenesis screensaver</summary>
-    <description>BioGenesis screensaver</description>
+    <description>An implementation of John Conway's famous "Game of Life" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.
+
+Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.
+
+Features:
+ - 3 custom coloring rules are implemented each yielding interesting results.
+ - Colony coloring color cells depending on the color of its 'parent' cells.
+ - Lifetime coloring colors a cell depending on how long its been alive.
+ - Neighbor coloring a cell depending on the configuration of its neighbors.
+ - Many parameters are configurable in the settings.
+    </description>
     <platform>@PLATFORM@</platform>
+    <assets>
+      <icon>resources/icon.png</icon>
+      <fanart>resources/fanart.png</fanart>
+      <screenshot>resources/screenshot-01.png</screenshot>
+      <screenshot>resources/screenshot-02.png</screenshot>
+      <screenshot>resources/screenshot-03.png</screenshot>
+    </assets>
   </extension>
 </addon>
