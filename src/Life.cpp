@@ -27,8 +27,8 @@
 #ifdef WIN32
 #include <d3d11.h>
 #else
-#include <kodi/gui/OpenGL/GL.h>
-#include <kodi/gui/OpenGL/Shader.h>
+#include <kodi/gui/gl/GL.h>
+#include <kodi/gui/gl/Shader.h>
 #endif
 
 struct CUSTOMVERTEX
@@ -49,8 +49,6 @@ struct Cell
 #define COLOR_TIME 0
 #define COLOR_COLONY 1
 #define COLOR_NEIGHBORS 2
-
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #ifdef WIN32
 ID3D11DeviceContext* g_pContext = nullptr;
@@ -98,7 +96,7 @@ public:
 #ifndef WIN32
   // kodi::gui::gl::CShaderProgram
   void OnCompiledAndLinked() override;
-  bool OnEnabled() { return true; };
+  bool OnEnabled() override { return true; };
 #endif
 
 private:
@@ -177,7 +175,9 @@ CScreensaverBiogenesis::CScreensaverBiogenesis()
 bool CScreensaverBiogenesis::Start()
 {
 #ifndef WIN32
-  if (!CreateShader("vert.glsl", "frag.glsl") || !CompileAndLink())
+  std::string fraqShader = kodi::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/frag.glsl");
+  std::string vertShader = kodi::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/vert.glsl");
+  if (!LoadShaderFiles(vertShader, fraqShader) || !CompileAndLink())
   {
     kodi::Log(ADDON_LOG_ERROR, "Failed to create and compile shader");
     return false;
@@ -592,7 +592,7 @@ void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRG
     {(float) x + w, (float)     y, 0.0f, dwColour,},
   };
 #ifndef WIN32
-  Enable();
+  EnableShader();
 
   GLfloat x1 = -1.0 + 2.0*x/m_width;
   GLfloat y1 = -1.0 + 2.0*y/m_height;
@@ -626,7 +626,7 @@ void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRG
   glDisableVertexAttribArray(m_aPosition);
   glDisableVertexAttribArray(m_aColor);
 
-  Disable();
+  DisableShader();
 #else
   D3D11_MAPPED_SUBRESOURCE res = {};
   if (SUCCEEDED(g_pContext->Map(g_pVBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &res)))
