@@ -1,11 +1,11 @@
-#version 130
+#version 150
 
 // Attributes
-attribute vec4 a_position;
-attribute vec4 a_color;
+in vec4 a_position;
+in vec4 a_color;
 
 // Varyings
-varying vec4 v_color;
+out vec4 v_color;
 
 void main()
 {
