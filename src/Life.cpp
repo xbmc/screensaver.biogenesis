@@ -24,6 +24,7 @@
 
 #include "types.h"
 #include <memory.h>
+#include <stddef.h>
 #ifdef WIN32
 #include <d3d11.h>
 #else
