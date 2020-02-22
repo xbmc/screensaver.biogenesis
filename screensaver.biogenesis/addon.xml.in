@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="screensaver.biogenesis"
-  version="2.3.0"
+  version="2.3.1"
   name="BioGenesis"
   provider-name="Team Kodi">
   <requires>@ADDON_DEPENDS@</requires>
@@ -22,6 +22,8 @@ Features:
  - Many parameters are configurable in the settings.
     </description>
     <platform>@PLATFORM@</platform>
+    <license>GPL-2.0</license>
+    <source>https://github.com/xbmc/screensaver.biogenesis</source>
     <assets>
       <icon>resources/icon.png</icon>
       <fanart>resources/fanart.png</fanart>
