@@ -9,8 +9,8 @@
     point="xbmc.ui.screensaver"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
-    <summary>BioGenesis screensaver</summary>
-    <description>An implementation of John Conway's famous "Game of Life" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.
+    <summary lang="en_GB">BioGenesis screensaver</summary>
+    <description lang="en_GB">An implementation of John Conway's famous "Game of Life" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.
 
 Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.
 
