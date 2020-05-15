@@ -22,7 +22,7 @@ Features:
  - Many parameters are configurable in the settings.
     </description>
     <platform>@PLATFORM@</platform>
-    <license>GPL-2.0</license>
+    <license>GPL-2.0-or-later</license>
     <source>https://github.com/xbmc/screensaver.biogenesis</source>
     <assets>
       <icon>resources/icon.png</icon>
