@@ -1,12 +1,10 @@
-////////////////////////////////////////////////////////////////////////////
-// This contains the types and math classes that I'm used to work with.
-// They have been stipped of most unneeded stuff that isn't needed in 
-// the screensaver
-//
-// Author:
-//   Joakim Eriksson
-//
-////////////////////////////////////////////////////////////////////////////
+/*
+ *  Copyright (C) 2005-2020 Team Kodi (https://kodi.tv)
+ *  Copyright (C) 2005 Joakim Eriksson <je@plane9.com>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSE.md for more information.
+ */
 
 #pragma once
 
@@ -52,7 +50,6 @@ const f32 FLOATEPSILON		= 0.00001f;
 
 #define DEGTORAD(d)			((d)*(PI / 180.0f))
 #define RADTODEG(r)			((r)*(180.0f / PI))
-#define assert(_x)
 
 /***************************** C L A S S E S *******************************/
 
@@ -63,7 +60,7 @@ class CRGBA
 public:
 	union
 	{
-		f32			col[4];	
+		f32			col[4];
 		struct
 		{
 			f32		r,g,b,a;
@@ -127,7 +124,7 @@ inline s32 FloatToInt(f32 f)
 inline u8 FloatToByte(f32 fval)
 {
 	if (fval >= 1.0f) return 255;
-	if (fval <= 0.0f) return 0;	
+	if (fval <= 0.0f) return 0;
 	return (u8)FloatToInt(fval * 255.5f);
 }
 
