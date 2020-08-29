@@ -9,7 +9,18 @@
     point="xbmc.ui.screensaver"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
+    <summary lang="de_DE">BioGenesis Bildschirmschoner</summary>
     <summary lang="en_GB">BioGenesis screensaver</summary>
+    <description lang="de_DE">Eine Implementierung von John Conways berühmtem "Game of Life" mit 3 benutzerdefinierten Farbregeln. Einige Grundregeln regeln, welche Zellen in der nächsten Generation leben werden, abhängig vom aktuellen Zustand der Zellen und der Anzahl ihrer lebenden Nachbarn.
+
+Screenshots werden nicht so sehr gerecht, da die Bewegung des Systems zwischen Stabilität und Chaos interessant aussieht.
+
+Eigenschaften:
+  - Es werden jeweils 3 benutzerdefinierte Farbregeln implementiert, die interessante Ergebnisse liefern.
+  - Farbzellen für Kolonien, abhängig von der Farbe der übergeordneten Zellen.
+  - Die lebenslange Färbung färbt eine Zelle abhängig davon, wie lange sie noch lebt.
+  - Nachbarn färben eine Zelle abhängig von der Konfiguration ihrer Nachbarn.
+  - Viele Parameter sind in den Einstellungen konfigurierbar.</description>
     <description lang="en_GB">An implementation of John Conway's famous "Game of Life" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.
 
 Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.
@@ -19,8 +30,7 @@ Features:
  - Colony coloring color cells depending on the color of its 'parent' cells.
  - Lifetime coloring colors a cell depending on how long its been alive.
  - Neighbor coloring a cell depending on the configuration of its neighbors.
- - Many parameters are configurable in the settings.
-    </description>
+ - Many parameters are configurable in the settings.</description>
     <platform>@PLATFORM@</platform>
     <license>GPL-2.0-or-later</license>
     <source>https://github.com/xbmc/screensaver.biogenesis</source>
