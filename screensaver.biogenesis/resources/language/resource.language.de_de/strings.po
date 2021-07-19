@@ -16,6 +16,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgctxt "Addon Summary"
+msgid "BioGenesis screensaver"
+msgstr "BioGenesis Bildschirmschoner"
+
+msgctxt "Addon Description"
+msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
+msgstr "Eine Implementierung von John Conways berühmtem \"Game of Life\" mit 3 benutzerdefinierten Farbregeln. Einige Grundregeln regeln, welche Zellen in der nächsten Generation leben werden, abhängig vom aktuellen Zustand der Zellen und der Anzahl ihrer lebenden Nachbarn.[CR][CR]Screenshots werden nicht so sehr gerecht, da die Bewegung des Systems zwischen Stabilität und Chaos interessant aussieht.[CR][CR]Eigenschaften:[CR]  - Es werden jeweils 3 benutzerdefinierte Farbregeln implementiert, die interessante Ergebnisse liefern.[CR]  - Farbzellen für Kolonien, abhängig von der Farbe der übergeordneten Zellen.[CR]  - Die lebenslange Färbung färbt eine Zelle abhängig davon, wie lange sie noch lebt.[CR]  - Nachbarn färben eine Zelle abhängig von der Konfiguration ihrer Nachbarn.[CR]  - Viele Parameter sind in den Einstellungen konfigurierbar."
+
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
 # For example, prefer wording as "This new string" instead of "This New String".
