@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: https://github.com/xbmc/screensavers.biogenesis/issues/\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2021-07-19 13:36+0000\n"
+"PO-Revision-Date: 2021-08-04 13:29+0000\n"
 "Last-Translator: Christian Gade <gade@kodi.tv>\n"
 "Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-look-and-feel/screensaver-biogenesis/da_dk/>\n"
 "Language: da_dk\n"
@@ -15,15 +15,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.1\n"
+"X-Generator: Weblate 4.7.2\n"
 
 msgctxt "Addon Summary"
 msgid "BioGenesis screensaver"
-msgstr ""
+msgstr "BioGenesis pauseskærm"
 
 msgctxt "Addon Description"
 msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
-msgstr ""
+msgstr "En implementering af John Conways berømte \"Game of Life\" med 3 brugerdefinerede farveregler. Et par grundlæggende regler styrer, hvilke celler der vil leve i den næste generation, afhængigt af cellernes nuværende tilstand og antallet af dets levende naboer.[CR][CR]Screenshots yder ikke så meget retfærdighed, da systemets bevægelse grænsende mellem stabilitet og kaos er det, der ser interessant ud.[CR][CR]Funktioner:[CR]- Der er implementeret 3 brugerdefinerede farveregler, der hver især giver interessante resultater.[CR]- Kolonifarvende farveceller afhængig af farven på dets 'overordnede' celler.[CR]CR]- Farvelægning i en levetid farver en celle afhængig af, hvor længe den har været i live.[CR]- Nabo, der farver en celle afhængigt af naboens konfiguration.[CR]- Mange parametre kan konfigureres i indstillingerne."
 
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
@@ -39,19 +39,19 @@ msgstr "Generel"
 
 msgctxt "#30001"
 msgid "Minimum grid size"
-msgstr ""
+msgstr "Minimum gitterstørrelse"
 
 msgctxt "#30002"
 msgid "Maximum grid size"
-msgstr ""
+msgstr "Maksimal gitterstørrelse"
 
 msgctxt "#30003"
 msgid "Reset time"
-msgstr ""
+msgstr "Nulstil tid"
 
 msgctxt "#30004"
 msgid "Preset change"
-msgstr ""
+msgstr "Ændring af forudindstilling"
 
 msgctxt "#30005"
 msgid "Minimum line size"
@@ -59,12 +59,12 @@ msgstr "Minimum linjestørrelse"
 
 msgctxt "#30006"
 msgid "Use colony colouring"
-msgstr ""
+msgstr "Anvend kolonifarvelægning"
 
 msgctxt "#30007"
 msgid "Use lifetime colouring"
-msgstr ""
+msgstr "Anvend livstidsfarvelægning"
 
 msgctxt "#30008"
 msgid "Use neighbour colouring"
-msgstr ""
+msgstr "Anvend nabofarvelægning"
