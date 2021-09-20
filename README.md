@@ -3,9 +3,9 @@
 This is a [Kodi](http://kodi.tv) screensaver addon.
 
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2+-blue.svg)](LICENSE.md)
-[![Build and run tests](https://github.com/xbmc/screensaver.biogenesis/actions/workflows/build.yml/badge.svg?branch=Matrix)](https://github.com/xbmc/screensaver.biogenesis/actions/workflows/build.yml)
-[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.screensaver.biogenesis?branchName=Matrix)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=42&branchName=Matrix)
-[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/screensaver.biogenesis/job/Matrix/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Fscreensaver.biogenesis/branches/)
+[![Build and run tests](https://github.com/xbmc/screensaver.biogenesis/actions/workflows/build.yml/badge.svg?branch=Nexus)](https://github.com/xbmc/screensaver.biogenesis/actions/workflows/build.yml)
+[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.screensaver.biogenesis?branchName=Nexus)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=42&branchName=Nexus)
+[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/screensaver.biogenesis/job/Nexus/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Fscreensaver.biogenesis/branches/)
 <!--- [![Build Status](https://ci.appveyor.com/api/projects/status/github/xbmc/screensaver.biogenesis?svg=true)](https://ci.appveyor.com/project/xbmc/screensaver-biogenesis) -->
 
 ## Build instructions
