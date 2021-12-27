@@ -69,7 +69,7 @@ struct Grid
   Cell * fullGrid;
 };
 
-class ATTRIBUTE_HIDDEN CScreensaverBiogenesis
+class ATTR_DLL_LOCAL CScreensaverBiogenesis
   : public kodi::addon::CAddonBase
   , public kodi::addon::CInstanceScreensaver
 #ifndef WIN32
@@ -166,8 +166,8 @@ CScreensaverBiogenesis::CScreensaverBiogenesis()
 bool CScreensaverBiogenesis::Start()
 {
 #ifndef WIN32
-  std::string fraqShader = kodi::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/frag.glsl");
-  std::string vertShader = kodi::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/vert.glsl");
+  std::string fraqShader = kodi::addon::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/frag.glsl");
+  std::string vertShader = kodi::addon::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/vert.glsl");
   if (!LoadShaderFiles(vertShader, fraqShader) || !CompileAndLink())
   {
     kodi::Log(ADDON_LOG_ERROR, "Failed to create and compile shader");
@@ -282,17 +282,17 @@ void CScreensaverBiogenesis::CreateGrid()
 {
   int i, cellmin, cellmax;
 
-  m_grid.minSize = kodi::GetSettingInt("minsize");
-  m_grid.maxSize = kodi::GetSettingInt("maxsize");
-  m_grid.resetTime = kodi::GetSettingInt("resettime");
-  m_grid.presetChance = kodi::GetSettingInt("presetchance");
-  m_grid.cellLineLimit = kodi::GetSettingInt("lineminsize");
+  m_grid.minSize = kodi::addon::GetSettingInt("minsize");
+  m_grid.maxSize = kodi::addon::GetSettingInt("maxsize");
+  m_grid.resetTime = kodi::addon::GetSettingInt("resettime");
+  m_grid.presetChance = kodi::addon::GetSettingInt("presetchance");
+  m_grid.cellLineLimit = kodi::addon::GetSettingInt("lineminsize");
 
-  if (!kodi::GetSettingBoolean("colony"))
+  if (!kodi::addon::GetSettingBoolean("colony"))
     m_grid.allowedColoring ^= (1 << COLOR_COLONY);
-  if (!kodi::GetSettingBoolean("lifetime"))
+  if (!kodi::addon::GetSettingBoolean("lifetime"))
     m_grid.allowedColoring ^= (1 << COLOR_TIME);
-  if (!kodi::GetSettingBoolean("neighbour"))
+  if (!kodi::addon::GetSettingBoolean("neighbour"))
     m_grid.allowedColoring ^= (1 << COLOR_NEIGHBORS);
 
   cellmin = (int)sqrt((float)(m_width*m_height/(int)(m_grid.maxSize*m_grid.maxSize*m_ratio)));
