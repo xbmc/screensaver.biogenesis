@@ -24,6 +24,7 @@
     <summary lang="en_GB">BioGenesis screensaver</summary>
     <summary lang="fi_FI">BioGenesis-näytönsäästäjä</summary>
     <summary lang="it_IT">Salvaschermo BioGenesis</summary>
+    <summary lang="ru_RU">Заставка BioGenesis</summary>
     <summary lang="uk_UA">Заставка BioGenesis</summary>
     <summary lang="zh_CN">生物发生屏保程序</summary>
     <description lang="da_DK">En implementering af John Conways berømte &quot;Game of Life&quot; med 3 brugerdefinerede farveregler. Et par grundlæggende regler styrer, hvilke celler der vil leve i den næste generation, afhængigt af cellernes nuværende tilstand og antallet af dets levende naboer.[CR][CR]Screenshots yder ikke så meget retfærdighed, da systemets bevægelse grænsende mellem stabilitet og kaos er det, der ser interessant ud.[CR][CR]Funktioner:[CR]- Der er implementeret 3 brugerdefinerede farveregler, der hver især giver interessante resultater.[CR]- Kolonifarvende farveceller afhængig af farven på dets &apos;overordnede&apos; celler.[CR]CR]- Farvelægning i en levetid farver en celle afhængig af, hvor længe den har været i live.[CR]- Nabo, der farver en celle afhængigt af naboens konfiguration.[CR]- Mange parametre kan konfigureres i indstillingerne.</description>
