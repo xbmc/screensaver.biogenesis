@@ -5,17 +5,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: https://github.com/xbmc/screensavers.biogenesis/issues/\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2021-07-05 07:29+0000\n"
-"Last-Translator: Alfonso Cachero <alfonso.cachero@gmail.com>\n"
+"PO-Revision-Date: 2023-01-28 16:45+0000\n"
+"Last-Translator: José Antonio Alvarado <jalvarado0.eses@gmail.com>\n"
 "Language-Team: Spanish (Spain) <https://kodi.weblate.cloud/projects/kodi-add-ons-look-and-feel/screensaver-biogenesis/es_es/>\n"
 "Language: es_es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.1\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgctxt "Addon Summary"
 msgid "BioGenesis screensaver"
@@ -23,7 +23,7 @@ msgstr ""
 
 msgctxt "Addon Description"
 msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
-msgstr ""
+msgstr "Una implementación del famoso \"Juego de la Vida\" de John Conway con 3 reglas de color personalizadas. Unas pocas reglas básicas gobiernan qué células vivirán en la siguiente generación dependiendo del estado actual de la célula y el número de sus vecinos vivas.[CR][CR]Las capturas de pantalla no le hacen mucha justicia, ya que el movimiento del sistema que bordea entre la estabilidad y el caos es lo que resulta interesante.[CR][CR]Características:[CR] - Se han implementado 3 reglas de color personalizado, cada una de las cuales produce resultados interesantes:[CR] - Colony coloring colorea las células en función del color de sus células \"padre\".[CR] - Lifetime coloring colorea una célula en función del tiempo que lleva viva.[CR] - Neighbor coloring colorea una célula en función de la configuración de sus vecinos.[CR] - Muchos parámetros son configurables en los ajustes."
 
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
@@ -51,7 +51,7 @@ msgstr ""
 
 msgctxt "#30004"
 msgid "Preset change"
-msgstr ""
+msgstr "Cambio de ajuste preestablecido"
 
 msgctxt "#30005"
 msgid "Minimum line size"
