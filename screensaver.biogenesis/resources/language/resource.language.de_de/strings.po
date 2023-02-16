@@ -7,23 +7,23 @@ msgstr ""
 "Project-Id-Version: KODI Main\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2021-07-26 14:29+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"PO-Revision-Date: 2023-02-06 14:15+0000\n"
+"Last-Translator: Demian <Demian@gmx.co.uk>\n"
 "Language-Team: German <https://kodi.weblate.cloud/projects/kodi-add-ons-look-and-feel/screensaver-biogenesis/de_de/>\n"
 "Language: de_de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.2\n"
+"X-Generator: Weblate 4.15.2\n"
 
 msgctxt "Addon Summary"
 msgid "BioGenesis screensaver"
-msgstr "BioGenesis Bildschirmschoner"
+msgstr "Bildschirmschoner BioGenesis"
 
 msgctxt "Addon Description"
 msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
-msgstr "Eine Implementierung von John Conways berühmtem \"Game of Life\" mit 3 benutzerdefinierten Farbregeln. Einige Grundregeln regeln, welche Zellen in der nächsten Generation leben werden, abhängig vom aktuellen Zustand der Zellen und der Anzahl ihrer lebenden Nachbarn.[CR][CR]Screenshots werden nicht so sehr gerecht, da die Bewegung des Systems zwischen Stabilität und Chaos interessant aussieht.[CR][CR]Eigenschaften:[CR] - Es werden jeweils 3 benutzerdefinierte Farbregeln implementiert, die interessante Ergebnisse liefern.[CR] - Farbzellen für Kolonien, abhängig von der Farbe der übergeordneten Zellen.[CR] - Die lebenslange Färbung färbt eine Zelle abhängig davon, wie lange sie noch lebt.[CR] - Nachbarn färben eine Zelle abhängig von der Konfiguration ihrer Nachbarn.[CR] - Viele Parameter sind in den Einstellungen konfigurierbar."
+msgstr "Eine Implementierung von John Conways berühmtem „Spiel des Lebens“ mit 3 benutzerdefinierten Färbungsregeln. Einige grundlegende Regeln bestimmen, welche Zellen in der nächsten Generation leben werden, abhängig vom aktuellen Zustand der Zelle und der Anzahl ihrer lebenden Nachbarn.[CR][CR]Bildschirmfotos können dem nicht gerecht werden, da die Bewegung des Systems zwischen Stabilität und Chaos, interessant aussieht.[CR][CR]Eigenschaften:[CR] - Es werden jeweils 3 benutzerdefinierte Färbungsregeln implementiert, die jeweils interessante Ergebnisse liefern.[CR] - Die Färbung von Koloniezellen hängt von der Farbe ihrer „Elternzellen“ ab.[CR] - Die Lebenszeitfärbung färbt die Zelle in Abhängigkeit davon, wie lange sie am Leben ist.[CR] - Nachbarfärbung einer Zelle in Abhängigkeit von der Konstitution ihrer Nachbarn.[CR] - Viele Parameter sind in den Einstellungen konfigurierbar."
 
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
@@ -51,7 +51,7 @@ msgstr "Zeit zurücksetzen"
 
 msgctxt "#30004"
 msgid "Preset change"
-msgstr "Presetwechsel"
+msgstr "Wechseln der Voreinstellung"
 
 msgctxt "#30005"
 msgid "Minimum line size"
@@ -59,12 +59,12 @@ msgstr "Minimale Zeilengröße"
 
 msgctxt "#30006"
 msgid "Use colony colouring"
-msgstr "Verwenden Sie Koloniefarbe"
+msgstr "Koloniefärbung verwenden"
 
 msgctxt "#30007"
 msgid "Use lifetime colouring"
-msgstr "Verwenden Sie lebenslange Farben"
+msgstr "Lebenszeitfärbung verwenden"
 
 msgctxt "#30008"
 msgid "Use neighbour colouring"
-msgstr "Verwenden Sie die Nachbarfarbe"
+msgstr "Nachbarfärbung verwenden"
