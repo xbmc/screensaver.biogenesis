@@ -5,24 +5,25 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: https://github.com/xbmc/screensavers.biogenesis/issues/\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-09-08 07:14+0000\n"
+"Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
+"Language-Team: Italian <https://kodi.weblate.cloud/projects/kodi-add-ons-look-and-feel/screensaver-biogenesis/it_it/>\n"
 "Language: it_it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14\n"
 
 msgctxt "Addon Summary"
 msgid "BioGenesis screensaver"
-msgstr ""
+msgstr "Salvaschermo BioGenesis"
 
 msgctxt "Addon Description"
 msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
-msgstr ""
+msgstr "Un'implementazione del famoso \"Game of Life\" di John Conway con tre regole di colorazione personalizzate. Alcune regole di base determinano quali cellule vivranno nella prossima generazione a seconda dello stato attuale delle cellule e del numero dei suoi vicini vivi.[CR][CR]Le schermate non rendono così tanto giustizia quanto il movimento del sistema al confine tra la stabilità e il caos è ciò che sembra interessante.[CR][CR]Caratteristiche:[CR] - Vengono implementate tre regole di colorazione personalizzate ciascuna con risultati interessanti.[CR] - Colony colora le celle a seconda del colore delle sue celle \"genitrici\".[ CR] - Lifetime colora una cella in base a quanto tempo è stata in vita.[CR] - Neighbor colora una cella in base alla configurazione delle sue celle vicine.[CR] - Molti parametri sono configurabili nelle impostazioni."
 
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
@@ -34,36 +35,36 @@ msgstr ""
 # Following strings used for addon settings dialog
 msgctxt "#30000"
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 msgctxt "#30001"
 msgid "Minimum grid size"
-msgstr ""
+msgstr "Dimensione minima griglia"
 
 msgctxt "#30002"
 msgid "Maximum grid size"
-msgstr ""
+msgstr "Dimensione massima griglia"
 
 msgctxt "#30003"
 msgid "Reset time"
-msgstr ""
+msgstr "Tempo rispristino"
 
 msgctxt "#30004"
 msgid "Preset change"
-msgstr ""
+msgstr "Modifica preimpostata"
 
 msgctxt "#30005"
 msgid "Minimum line size"
-msgstr ""
+msgstr "Dimensione minima linea"
 
 msgctxt "#30006"
 msgid "Use colony colouring"
-msgstr ""
+msgstr "Usa colorazione Colony"
 
 msgctxt "#30007"
 msgid "Use lifetime colouring"
-msgstr ""
+msgstr "Usa colorazione Lifetime"
 
 msgctxt "#30008"
 msgid "Use neighbour colouring"
-msgstr ""
+msgstr "Usa colorazione Neighbor"
