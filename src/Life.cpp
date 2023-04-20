@@ -22,6 +22,8 @@
 #include <kodi/gui/gl/Shader.h>
 #endif
 
+#include <vector>
+
 struct CUSTOMVERTEX
 {
   float x, y, z; // The transformed position for the vertex.
@@ -66,7 +68,7 @@ struct Grid
   int cellLineLimit;
   CRGBA palette[800];
   Cell * cells;
-  Cell * fullGrid;
+  std::vector<Cell> fullGrid;
 };
 
 class ATTR_DLL_LOCAL CScreensaverBiogenesis
@@ -147,7 +149,6 @@ float frand() { return ((float) rand() / (float) RAND_MAX); }
 CScreensaverBiogenesis::CScreensaverBiogenesis()
 {
   m_grid.cells = nullptr;
-  m_grid.fullGrid = nullptr;
   m_width = Width();
   m_height = Height();
   m_ratio = (float)m_width/(float)m_height;
@@ -206,8 +207,6 @@ void CScreensaverBiogenesis::Render()
 // any resources we have created.
 void CScreensaverBiogenesis::Stop()
 {
-  delete m_grid.fullGrid;
-  m_grid.fullGrid = nullptr;
 #ifdef WIN32
   SAFE_RELEASE(g_pPShader);
   SAFE_RELEASE(g_pVBuffer);
@@ -306,11 +305,8 @@ void CScreensaverBiogenesis::CreateGrid()
     m_grid.spacing = 0;
   else m_grid.spacing = 1;
 
-
-  if (m_grid.fullGrid)
-    delete m_grid.fullGrid;
-  m_grid.fullGrid = new Cell[m_grid.width*(m_grid.height+2)+2];
-  memset(m_grid.fullGrid,0, (m_grid.width*(m_grid.height+2)+2) * sizeof(Cell));
+  m_grid.fullGrid.clear();
+  m_grid.fullGrid.resize(m_grid.width*(m_grid.height+2)+2);
   m_grid.cells = &m_grid.fullGrid[m_grid.width + 1];
   m_grid.frameCounter = 0;
   do
