@@ -193,7 +193,14 @@ void CScreensaverBiogenesis::Render()
 #ifndef WIN32
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
+#else
+  ID3D11RenderTargetView* renderTargetView;
+  g_pContext->OMGetRenderTargets(1, &renderTargetView, nullptr);
+  float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+  g_pContext->ClearRenderTargetView(renderTargetView, clearColor);
+  SAFE_RELEASE(renderTargetView);
 #endif
+
 
   if (m_grid.frameCounter++ == m_grid.resetTime)
     CreateGrid();
