@@ -524,7 +524,7 @@ void CScreensaverBiogenesis::StepColony()
     {
       if (count == 3 || (m_grid.ruleset && count == 6))
       {
-        if (foundColors[0] == foundColors[2])
+        if (static_cast<CRGBA>(foundColors[0]) == static_cast<CRGBA>(foundColors[2]))
           m_grid.cells[i].color = foundColors[0];
         else
           m_grid.cells[i].color = foundColors[1];
