@@ -73,7 +73,7 @@ public:
 	u32			RenderColor(void) const;
 	void		Set(f32 R, f32 G, f32 B, f32 A)		{ col[0]=R; col[1]=G; col[2]=B; col[3]=A;			}
 	CRGBA&		operator = (const CRGBA& c)			{ r = c.r; g = c.g; b = c.b; a = c.a; return *this; }
-	bool		operator == (const CRGBA& c)			{ return r==c.r && g==c.g && b==c.b && a == c.a; }
+	bool		operator == (const CRGBA& c) const			{ return r==c.r && g==c.g && b==c.b && a == c.a; }
         static CRGBA           Lerp(const CRGBA& a, const CRGBA& e, float ratio)
         {
           CRGBA result;
