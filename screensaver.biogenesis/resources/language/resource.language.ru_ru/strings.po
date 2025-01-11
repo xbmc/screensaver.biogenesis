@@ -7,15 +7,15 @@ msgstr ""
 "Project-Id-Version: KODI Main\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2022-09-13 09:14+0000\n"
-"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
+"PO-Revision-Date: 2025-01-11 09:27+0000\n"
+"Last-Translator: Alexey <signfinder@gmail.com>\n"
 "Language-Team: Russian <https://kodi.weblate.cloud/projects/kodi-add-ons-look-and-feel/screensaver-biogenesis/ru_ru/>\n"
 "Language: ru_ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgctxt "Addon Summary"
 msgid "BioGenesis screensaver"
@@ -23,7 +23,7 @@ msgstr "Заставка BioGenesis"
 
 msgctxt "Addon Description"
 msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
-msgstr ""
+msgstr "Реализация знаменитой «Игры жизни» Джона Конвея с 3 пользовательскими правилами раскраски. Несколько основных правил определяют, какие клетки будут жить в следующем поколении в зависимости от текущего состояния клеток и количества их живых соседей.[CR][CR]Скриншоты не передают всей полноты картины, поскольку движение системы на границе между стабильностью и хаосом выглядит интересным.[CR][CR]Особенности:[CR] - Реализовано 3 пользовательских правила раскраски, каждое из которых дает интересные результаты.[CR] - Колония окрашивает клетки в зависимости от цвета ее «родительских» клеток.[CR] - Пожизненная раскраска окрашивает клетку в зависимости от того, как долго она была жива.[CR] - Сосед окрашивает клетку в зависимости от конфигурации ее соседей.[CR] - Многие параметры настраиваются в настройках."
 
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
