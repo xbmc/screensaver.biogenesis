@@ -5,24 +5,25 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: https://github.com/xbmc/screensavers.biogenesis/issues/\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-04-07 06:15+0000\n"
+"Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
+"Language-Team: Swedish <https://kodi.weblate.cloud/projects/kodi-add-ons-look-and-feel/screensaver-biogenesis/sv_se/>\n"
 "Language: sv_se\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
 
 msgctxt "Addon Summary"
 msgid "BioGenesis screensaver"
-msgstr ""
+msgstr "BioGenesis skärmsläckare"
 
 msgctxt "Addon Description"
 msgid "An implementation of John Conway's famous \"Game of Life\" with 3 custom coloring rules. A few basic rules govern which cells will live in the next generation depending on the cells current state and the number of its live neighbors.[CR][CR]Screenshots don't do this much justice as the motion of the system bordering between stability and chaos is what looks interesting.[CR][CR]Features:[CR] - 3 custom coloring rules are implemented each yielding interesting results.[CR] - Colony coloring color cells depending on the color of its 'parent' cells.[CR] - Lifetime coloring colors a cell depending on how long its been alive.[CR] - Neighbor coloring a cell depending on the configuration of its neighbors.[CR] - Many parameters are configurable in the settings."
-msgstr ""
+msgstr "En implementering av John Conways berömda ”Game of Life” med 3 anpassade färgläggningsregler. Några grundläggande regler styr vilka celler som kommer att leva i nästa generation beroende på cellens nuvarande tillstånd och antalet levande grannar.[CR][CR]Skärmdumpar gör inte detta mycket rättvisa eftersom systemets rörelse som gränsar mellan stabilitet och kaos är det som ser intressant ut.[CR][CR]Funktioner:[CR] - 3 anpassade färgregler implementeras var och en ger intressanta resultat. [CR] - Kolonifärgning färgar celler beroende på färgen på dess ”föräldraceller”.[CR] - Livstidsfärgning färgar en cell beroende på hur länge den har levt.[CR] - Grannfärgning färgar en cell beroende på konfigurationen av dess grannar.[CR] - Många parametrar kan konfigureras i inställningarna."
 
 # [Consistency] Make terms, settings names, brands and other minutiae, consistent throughout file.
 # [Capitalization] Avoid capitalizing every second word. See http://grammarist.com/capitalization/
@@ -34,36 +35,36 @@ msgstr ""
 # Following strings used for addon settings dialog
 msgctxt "#30000"
 msgid "General"
-msgstr ""
+msgstr "Allmänt"
 
 msgctxt "#30001"
 msgid "Minimum grid size"
-msgstr ""
+msgstr "Minsta rutnätsstorlek"
 
 msgctxt "#30002"
 msgid "Maximum grid size"
-msgstr ""
+msgstr "Största rutnätsstorlek"
 
 msgctxt "#30003"
 msgid "Reset time"
-msgstr ""
+msgstr "Nollställ tid"
 
 msgctxt "#30004"
 msgid "Preset change"
-msgstr ""
+msgstr "Förvalsändring"
 
 msgctxt "#30005"
 msgid "Minimum line size"
-msgstr ""
+msgstr "Minsta linjestorlek"
 
 msgctxt "#30006"
 msgid "Use colony colouring"
-msgstr ""
+msgstr "Använd färgning av kolonier"
 
 msgctxt "#30007"
 msgid "Use lifetime colouring"
-msgstr ""
+msgstr "Använd färgning av livstid"
 
 msgctxt "#30008"
 msgid "Use neighbour colouring"
-msgstr ""
+msgstr "Använd färgning av grannar"
