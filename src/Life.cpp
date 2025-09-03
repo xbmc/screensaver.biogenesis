@@ -122,6 +122,7 @@ private:
   GLint m_aColor = -1;
   GLuint m_vertexVBO;
   GLuint m_indexVBO;
+  GLuint m_vao;
 #endif
 };
 
@@ -175,6 +176,10 @@ bool CScreensaverBiogenesis::Start()
     return false;
   }
 
+#if defined(HAS_GL)
+  glGenVertexArrays(1, &m_vao);
+#endif
+
   glGenBuffers(1, &m_vertexVBO);
   glGenBuffers(1, &m_indexVBO);
 #endif
@@ -192,6 +197,10 @@ bool CScreensaverBiogenesis::Start()
 void CScreensaverBiogenesis::Render()
 {
 #ifndef WIN32
+#if defined(HAS_GL)
+  glBindVertexArray(m_vao);
+#endif
+
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 #endif
@@ -200,6 +209,10 @@ void CScreensaverBiogenesis::Render()
     CreateGrid();
   Step();
   DrawGrid();
+
+#if defined(HAS_GL)
+  glBindVertexArray(0);
+#endif
 }
 
 // Kodi tells us to stop the screensaver
@@ -211,10 +224,12 @@ void CScreensaverBiogenesis::Stop()
   SAFE_RELEASE(g_pPShader);
   SAFE_RELEASE(g_pVBuffer);
 #else
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &m_vertexVBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &m_indexVBO);
+
+#if defined(HAS_GL)
+  glDeleteVertexArrays(1, &m_vao);
+#endif
 #endif
 }
 
@@ -612,6 +627,9 @@ void CScreensaverBiogenesis::DrawRectangle(int x, int y, int w, int h, const CRG
 
   glDisableVertexAttribArray(m_aPosition);
   glDisableVertexAttribArray(m_aColor);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   DisableShader();
 #else
